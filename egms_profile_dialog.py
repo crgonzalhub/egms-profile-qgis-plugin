@@ -69,7 +69,8 @@ class EGMSPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.btn_export.clicked.connect(self.export)
 
         self.cmb_layer.layerChanged.connect(self.load_from_layer)
-
+        print(f"Current layer at startup: {self.cmb_layer.currentLayer()}")
+        self.load_from_layer(self.cmb_layer.currentLayer())
         self.load_from_layer(self.cmb_layer.currentLayer())
 
     def load_csv(self):
@@ -97,7 +98,7 @@ class EGMSPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         """Carga los datos desde una capa vectorial ya existente en QGIS.
         Se activa automáticamente cuando el usuario cambia la capa
         seleccionada en cmb_layer."""
-        
+        print(f"load_from_layer called: {layer}")
         # Si no hay capa seleccionada salimos
         if not layer:
             return
@@ -116,6 +117,8 @@ class EGMSPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
         # Obtenemos los nombres de los campos de la capa
         field_names = [field.name() for field in layer.fields()]
+        print(f"Fields: {field_names}")
+        print(f"Feature count: {layer.featureCount()}")
 
         # Iteramos por todas las entidades de la capa
         for feature in layer.getFeatures():
@@ -168,6 +171,7 @@ class EGMSPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         QgsProject.instance().addMapLayer(self.layer)
 
     def apply_symbology(self):
+        velocity_field = "mean_velocity"  # Campo de velocidad fijo
 
         colors = [
             (-20, -5, QColor(215, 25, 28)),
