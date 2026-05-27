@@ -88,10 +88,10 @@ class EGMSPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Error reading file: {e}")
             return
+        
 
         self.create_layer(os.path.splitext(os.path.basename(filepath))[0])
-        self.iface.messageBar().pushMessage(
-            "EGMS", f"Loaded {len(self.egms_data)} points", level=Qgis.Success)
+        self.iface.messageBar().pushMessage("EGMS", f"Loaded {len(self.egms_data)} points", level=Qgis.Success)
         
 
 
@@ -162,7 +162,7 @@ class EGMSPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                 f.setGeometry(QgsGeometry.fromPointXY(QgsPointXY(lon, lat)))
                 f.setAttributes([row['pid'], vel, float(row['rmse_ts']), lat, lon])
                 features.append(f)
-            except (ValueError, KeyError):
+            except (ValueError, KeyError): #ValueError elimina errores en las celdas. KeyError los elimina en los campos (si no existirera latitud por ejemplo)
                 continue
 
         provider.addFeatures(features)
@@ -267,7 +267,7 @@ class EGMSPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
         if not profile_points:
             QMessageBox.warning(self, "EGMS",
-                "No EGMS points found near the trace.\n"
+                f"No EGMS points found near the trace with the {self.spin_threshold.value()}m threshold.\n"
                 "Try increasing the distance threshold.")
             return
 
